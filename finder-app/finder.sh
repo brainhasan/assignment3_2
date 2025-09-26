@@ -1,46 +1,28 @@
 #!/bin/sh
 
-help() {
-    echo "type --help for this information"
-    echo "Expected usage is finder.sh file_path text_to_look_for"
-}
+if [ "$#" -ne 2 ]
+then
+	echo "Incorrect number of args given"
+	echo "Needs both file directory and search string"
+	exit 1
+fi
 
-# the purpose of this file is to take in a file path and a string (in that order)
-# to look for at the given file path
-finderApp() {
-    numberOfFiles=$(find $filesDir/* -type f | wc -l)
-    numberOfFilesWithString=$(grep $searchStr $filesDir/* | wc -l)
-    echo "The number of files are $numberOfFiles and the number of matching lines are $numberOfFilesWithString" 
-}
+filesdir="$1"
+searchstr="$2"
 
-errorCheckFinderApp() {
-    # number of arguments validation
-    if [ $numberOfArgs -ne 2 ]
-    then
-        echo "Error, expected 2 arguments but got $numberOfArgs"
-        help
-        exit 1
-    fi
+echo "file directory: $filesdir"
+echo "search str: $searchstr"
 
-    # File directory validation
-    if [ ! -d "$filesDir" ]
-    then
-        echo "File path was invalid:" $filesDir
-        help
-        exit 1
-    fi
+if [ ! -d "$filesdir" ]
+then
+	echo "Directory provided does not exist"
+	exit 1
+fi
 
-    if [[ $1 -eq "--help" ]] 
-    then
-        help
-        exit 0
-    fi
+totalFiles=$(find "$filesdir" -type f | wc -l)
+matchingLines=$(grep -r "$searchstr" "$filesdir" | wc -l)
 
-}
+echo "The number of files are $totalFiles and the number of matching lines are $matchingLines"
+exit 0
 
-numberOfArgs=$#
-filesDir=$1
-searchStr=$2
-errorCheckFinderApp
 
-finderApp
